@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: pitchiq-soccer-analytics
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --chdir backend --workers 2 --bind 0.0.0.0:$PORT app:app
+    envVars:
+      - key: FLASK_DEBUG
+        value: "0"
+      - key: FOOTBALL_DATA_API_KEY
+        sync: false   # set this manually in the Render dashboard (optional, for live data)
+    autoDeploy: true

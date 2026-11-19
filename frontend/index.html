@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PitchIQ — Soccer Analytics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head>
+<body>
+  <div class="bg-orbs">
+    <span class="orb orb-a"></span>
+    <span class="orb orb-b"></span>
+    <span class="orb orb-c"></span>
+  </div>
+  <section class="hero" id="hero">
+    <div class="hero-field">
+      <div class="field-line line-h"></div>
+      <div class="field-line line-v"></div>
+      <div class="field-circle"></div>
+    </div>
+    <div class="hero-particles" id="heroParticles"></div>
+
+    <div class="hero-content">
+      <span class="hero-kicker">⚡ Powered by real match data across Europe</span>
+      <h1 class="hero-title">
+        <span class="reveal" style="--d:0">Where</span>
+        <span class="reveal" style="--d:1">Data</span>
+        <span class="reveal grad" style="--d:2">Meets</span>
+        <span class="reveal grad" style="--d:3">The</span>
+        <span class="reveal grad" style="--d:4">Beautiful</span>
+        <span class="reveal grad" style="--d:5">Game.</span>
+      </h1>
+      <p class="hero-sub reveal" style="--d:6">
+        Analyze shots, assists, head-to-head duels, win probabilities, and scouting targets
+        across the Premier League, La Liga, Serie A, Ligue 1 and the Champions League.
+      </p>
+
+      <div class="hero-cta reveal" style="--d:7">
+        <button class="primary-btn hero-btn" id="enterAppBtn">Explore the Dashboard →</button>
+        <span class="hero-hint">No sign-up · Live sample data ready</span>
+      </div>
+
+      <div class="hero-stats reveal" style="--d:8">
+        <div class="hero-stat">
+          <div class="hero-stat-value" data-target="5" data-suffix="">0</div>
+          <div class="hero-stat-label">Top Leagues</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-value" data-target="21" data-suffix="">0</div>
+          <div class="hero-stat-label">Clubs Tracked</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-value" data-target="39" data-suffix="">0</div>
+          <div class="hero-stat-label">Players Analyzed</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-value" data-target="4" data-suffix="">0</div>
+          <div class="hero-stat-label">Analysis Tools</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-ball-wrap reveal" style="--d:3">
+      <div class="hero-ball">
+        <svg viewBox="0 0 100 100" width="140" height="140">
+          <polygon points="50,15 63,25 58,42 42,42 37,25" fill="#0b1020"/>
+          <polygon points="50,15 63,25 74,18 68,5 50,5" fill="#f1f4fc"/>
+          <polygon points="63,25 58,42 74,52 86,38 74,18" fill="#f1f4fc"/>
+          <polygon points="58,42 42,42 37,58 50,68 63,58" fill="#f1f4fc"/>
+          <polygon points="42,42 37,25 20,18 14,38 26,52" fill="#f1f4fc"/>
+          <polygon points="37,25 50,15 50,5 32,5 20,18" fill="#f1f4fc"/>
+          <circle cx="50" cy="50" r="48" fill="none" stroke="#1a2140" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <div class="hero-ball-shadow"></div>
+    </div>
+
+    <button class="scroll-cue" id="scrollCue" aria-label="Scroll to dashboard">
+      <span></span>
+    </button>
+  </section>
+
+  <div class="app-shell" id="appShell">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-badge">⚽</span>
+        <div>
+          <h1>Pitch<span class="accent-text">IQ</span></h1>
+          <p>Top 5 Leagues + Champions League Analytics</p>
+        </div>
+      </div>
+      <div class="league-strip">
+        <span class="league-chip">🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League</span>
+        <span class="league-chip">🇪🇸 La Liga</span>
+        <span class="league-chip">🇮🇹 Serie A</span>
+        <span class="league-chip">🇫🇷 Ligue 1</span>
+        <span class="league-chip gold">🏆 UCL</span>
+      </div>
+      <div class="data-source" id="dataSourceBadge">
+        <span class="ds-dot"></span>
+        <span id="dataSourceText">Loading data source…</span>
+        <button id="refreshLiveBtn" class="ds-refresh-btn" title="Pull live data from football-data.org">⟳ Refresh Live</button>
+      </div>
+      <nav class="tabs" id="tabs">
+        <button class="tab-btn active" data-tab="stats"><span>📊</span> Player Stats</button>
+        <button class="tab-btn" data-tab="compare"><span>⚔️</span> Head-to-Head</button>
+        <button class="tab-btn" data-tab="predict"><span>🔮</span> Match Predictor</button>
+        <button class="tab-btn" data-tab="scouting"><span>🔎</span> Scouting</button>
+      </nav>
+    </header>
+
+    <main class="content">
+
+      <!-- STATS TAB -->
+      <section id="stats" class="tab-panel active">
+        <div class="panel-header">
+          <h2>Shots &amp; Assists Explorer</h2>
+          <p>Filter players across every league to analyze attacking output.</p>
+        </div>
+        <div class="filters">
+          <select id="statsLeague"><option value="">All Leagues</option></select>
+          <select id="statsPosition">
+            <option value="">All Positions</option>
+            <option value="FW">Forward</option>
+            <option value="MF">Midfielder</option>
+            <option value="DF">Defender</option>
+            <option value="GK">Goalkeeper</option>
+          </select>
+          <input id="statsSearch" type="text" placeholder="Search player…" />
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <h3>Shots on Target vs Assists</h3>
+            <canvas id="statsChart" height="260"></canvas>
+          </div>
+          <div class="card table-card">
+            <h3>Leaderboard</h3>
+            <div class="table-scroll">
+              <table id="statsTable">
+                <thead>
+                  <tr><th>Player</th><th>Team</th><th>Pos</th><th>Goals</th><th>Assists</th><th>Shots</th><th>SoT</th><th>xG</th></tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- COMPARE TAB -->
+      <section id="compare" class="tab-panel">
+        <div class="panel-header">
+          <h2>Head-to-Head Comparison</h2>
+          <p>Compare any two players' per-90 production side by side.</p>
+        </div>
+        <div class="filters">
+          <select id="p1Select"></select>
+          <span class="vs">VS</span>
+          <select id="p2Select"></select>
+          <button id="compareBtn" class="primary-btn">Compare</button>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <h3>Per-90 Radar</h3>
+            <canvas id="compareChart" height="280"></canvas>
+          </div>
+          <div class="card table-card">
+            <h3>Stat Breakdown</h3>
+            <div class="table-scroll">
+              <table id="compareTable">
+                <thead><tr><th>Stat</th><th id="p1Header">Player 1</th><th id="p2Header">Player 2</th><th>Edge</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PREDICT TAB -->
+      <section id="predict" class="tab-panel">
+        <div class="panel-header">
+          <h2>Match Outcome Predictor</h2>
+          <p>Poisson goal-expectancy model using season attack/defense strength vs. league average.</p>
+        </div>
+        <div class="filters">
+          <select id="team1Select"></select>
+          <span class="vs">VS</span>
+          <select id="team2Select"></select>
+          <button id="predictBtn" class="primary-btn">Predict</button>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <h3>Win Probability</h3>
+            <canvas id="predictChart" height="260"></canvas>
+            <div id="predictSummary" class="summary"></div>
+          </div>
+          <div class="card table-card">
+            <h3>Most Likely Scorelines</h3>
+            <div class="table-scroll">
+              <table id="scorelineTable">
+                <thead><tr><th>Score</th><th>Probability</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCOUTING TAB -->
+      <section id="scouting" class="tab-panel">
+        <div class="panel-header">
+          <h2>Scouting Recommender</h2>
+          <p>Find the best-fit transfer target for a club's need, weighted by position and budget.</p>
+        </div>
+        <div class="filters">
+          <select id="scoutClub"></select>
+          <select id="scoutPosition">
+            <option value="">Any Position</option>
+            <option value="FW">Forward</option>
+            <option value="MF">Midfielder</option>
+            <option value="DF">Defender</option>
+            <option value="GK">Goalkeeper</option>
+          </select>
+          <input id="scoutBudget" type="number" placeholder="Budget (€M, optional)" />
+          <button id="scoutBtn" class="primary-btn">Find Targets</button>
+        </div>
+        <div class="card table-card full">
+          <h3>Recommended Targets</h3>
+          <div class="table-scroll">
+            <table id="scoutTable">
+              <thead><tr><th>#</th><th>Player</th><th>Current Club</th><th>League</th><th>Pos</th><th>Fit Score</th><th>Value (€M)</th><th>Budget Fit</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </main>
+    <footer class="footer">Sample dataset for demo purposes · Swap in a live feed (e.g. football-data.org / API-FOOTBALL) via <code>fetch_live.py</code></footer>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
